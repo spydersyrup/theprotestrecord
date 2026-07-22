@@ -1,0 +1,58 @@
+name: Validate entries and strip image metadata
+
+on:
+  pull_request:
+    paths:
+      - 'data/events/**'
+      - 'images/**'
+  push:
+    branches: [main]
+    paths:
+      - 'data/events/**'
+      - 'images/**'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-clean:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate all event JSON files
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for file in data/events/*.json; do
+            echo "Checking $file"
+            node scripts/validate-entry.js "$file"
+          done
+
+      - name: Install exiftool
+        run: sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl
+
+      - name: Strip EXIF from all images
+        run: |
+          if [ -d images ]; then
+            find images -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -exec exiftool -all= -overwrite_original {} \;
+          fi
+
+      - name: Commit cleaned images if changed
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add images/
+          if ! git diff --staged --quiet; then
+            git commit -m "Strip EXIF metadata from images"
+            git push
+          fi
