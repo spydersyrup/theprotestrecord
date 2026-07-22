@@ -94,8 +94,14 @@ for (const cat of categories) {
   fs.writeFileSync(path.join(catDir, 'index.html'), catHTML, 'utf-8');
 }
 
+// Generate Submit Page
+const submitDir = path.join(DOCS_DIR, 'submit');
+fs.mkdirSync(submitDir, { recursive: true });
+const submitHTML = buildHTML(events, 'submit', null, '../', categories);
+fs.writeFileSync(path.join(submitDir, 'index.html'), submitHTML, 'utf-8');
+
 fs.writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '', 'utf-8');
-console.log(`Generated homepage and 4 category pages`);
+console.log(`Generated homepage, 4 category pages, and submit page`);
 
 // ---------------------------------------------------------------------------
 // HTML Template
@@ -118,6 +124,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
   <style>${getCSS()}</style>
 </head>
 <body>
@@ -143,6 +150,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
           ${categories.map(c => `
           <li><a href="${depth}${c.id}/" class="nav-link ${categoryId === c.id ? 'active' : ''}">${c.label}</a></li>
           `).join('')}
+          <li><a href="${depth}submit/" class="nav-link ${pageType === 'submit' ? 'active' : ''}">Submit</a></li>
         </ul>
       </nav>
 
@@ -161,6 +169,28 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
     </aside>
 
     <main class="main-content">
+      ${pageType === 'submit' ? `
+        <div class="submit-page">
+          <p class="submit-intro">Were you there? Add what you saw.</p>
+          <div class="submit-options">
+            <div class="submit-card">
+              <h3>Submit a photo or video</h3>
+              <p>No GitHub needed. Upload raw footage or images directly via our submission form. We will review and verify before it goes live.</p>
+              <div style="margin-top: 2rem;">
+                <iframe data-tally-src="https://tally.so/embed/5BgpNv?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1&formEventsForwarding=1" loading="lazy" width="100%" height="1808" frameborder="0" marginheight="0" marginwidth="0" title="TWLD — Submit a Photo or Video"></iframe>
+                <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
+              </div>
+            </div>
+            <div class="submit-card">
+              <h3>Contribute via GitHub</h3>
+              <p>For written accounts, art, memes, or news article summaries. Open a Pull Request directly against the repository if you are comfortable with GitHub.</p>
+              <a href="https://github.com/spydersyrup/TWLD" target="_blank" rel="noopener noreferrer" class="submit-btn-outline">View GitHub Repo &rarr;</a>
+              <a href="https://github.com/spydersyrup/TWLD/blob/main/contributing.md" target="_blank" rel="noopener noreferrer" class="submit-link">Read the contribution guide</a>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
       ${pageType === 'home' ? `
         <div class="home-intro">
           <p>In July 2026, thousands of young Indians took to the streets. This is a record of what happened, built by the people who were there. Every entry is submitted, reviewed, and kept accurate by the community, not by any newsroom, party, or platform.</p>
@@ -171,13 +201,17 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
         </div>
       ` : ''}
       
+      ${pageType !== 'submit' ? `
       <div class="archive" id="timeline-container">
         <div class="archive-entries" id="timeline-events"></div>
       </div>
+      ` : ''}
 
+      ${pageType !== 'submit' ? `
       <div class="empty-state hidden" id="empty-state">
         <p class="empty-text">No entries found.</p>
       </div>
+      ` : ''}
 
       <footer class="colophon" id="site-footer">
         <p class="footer-callout">Were you there? Add what you saw.</p>
@@ -797,6 +831,91 @@ body {
 .sep { margin: 0 0.5rem; color: var(--rule); }
 
 /* Responsive */
+/* Submit Page */
+.submit-intro {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.submit-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto 5rem auto;
+}
+
+.submit-card {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  padding: 2.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-card h3 {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.submit-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.submit-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+.submit-btn:hover { opacity: 0.9; }
+
+.submit-btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--text);
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+.submit-btn-outline:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.submit-link {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-align: center;
+}
+.submit-link:hover {
+  color: var(--text);
+}
+
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -844,6 +963,10 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
+  }
+
+  .submit-options {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1165,7 +1288,9 @@ function getJS() {
   }
 
   // Init
-  renderTimeline();
+  if (pageType !== 'submit') {
+    renderTimeline();
+  }
 
 })();
 `;

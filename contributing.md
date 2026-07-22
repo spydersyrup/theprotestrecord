@@ -4,7 +4,7 @@ This project documents India's youth-led protest movement, starting with the Coc
 
 ## If you were there and have photos or videos
 
-You don't need to know GitHub for this. Fill out this form: [https://forms.gle/bHTL1e8Ux6LTDLTL9]
+You don't need to know GitHub for this. Fill out this form: [https://tally.so/r/5BgpNv]
 
 Include the date, rough location, and a short caption. We'll review it and add it to the archive.
 
