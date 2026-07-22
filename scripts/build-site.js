@@ -16,7 +16,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const EVENTS_DIR = path.join(ROOT, 'data', 'events');
-const IMAGES_DIR = path.join(ROOT, 'images');
+const IMAGES_DIR = path.join(ROOT, 'data', 'images');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const DOCS_IMAGES_DIR = path.join(DOCS_DIR, 'images');
 
