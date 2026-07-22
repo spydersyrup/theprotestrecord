@@ -926,3 +926,37 @@ body {
   }
   .entry { opacity: 1; transform: none; }
 }
+
+/* Social Handles */
+.social-handles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.social-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.social-handle:hover {
+  background-color: var(--rule);
+  color: var(--text);
+}

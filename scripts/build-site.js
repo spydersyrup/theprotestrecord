@@ -170,8 +170,6 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
         </ul>
       </nav>
 
-
-
       <div class="sidebar-footer">
         <div class="sidebar-footer-actions">
           <button
@@ -227,31 +225,19 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
             ${events.length} ${events.length === 1 ? 'entry' : 'entries'} across ${categories.length} categories
             ${events.length > 0 ? ` &bull; Last updated ${new Date(events[0].date + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}` : ''}
           </p>
+          <!-- Quick City Filters -->
+          <div class="city-filters" id="city-filters">
+            <span class="city-filters-label">Hotspots:</span>
+            <!-- Rendered by JS -->
+          </div>
         </div>
       ` : ''}
       
       ${pageType !== 'submit' ? `
       <div class="archive" id="timeline-container">
-        <div class="archive-entries" id="timeline-events"></div>
+        <!-- Rendered by JS -->
       </div>
       ` : ''}
-
-      ${pageType !== 'submit' ? `
-      <div class="empty-state hidden" id="empty-state">
-        <p class="empty-text">No entries found.</p>
-        <button class="empty-reset hidden" id="empty-reset">Clear filter</button>
-      </div>
-      ` : ''}
-
-      <footer class="colophon" id="site-footer">
-        <p class="footer-callout">Were you there? Add what you saw.</p>
-        <p>TWLD is an open-source, community-maintained archive. No single person or organization owns this record. Anyone can contribute, verify, or question it.</p>
-        <p class="colophon-links">
-          <a href="${depth}submit/">Submit an entry</a>
-          <span class="sep">/</span>
-          <a href="https://github.com/spydersyrup/TWLD">GitHub</a>
-        </p>
-      </footer>
     </main>
   </div>
 

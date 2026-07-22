@@ -11,5 +11,8 @@
   "contributor": "string (name, initials, or 'Anonymous')",
   "submitted_via": "github-pr | google-form",
   "verified": "boolean (true once corroborated by a second source/submission)",
-  "source_url": "string (URL to original news article, required for news-articles)"
+  "source_url": "string (URL to original news article, required for news-articles)",
+  "ig_handle": "string (optional, e.g. @username)",
+  "x_handle": "string (optional, e.g. @username)",
+  "source_link": "string (optional, external link to evidence or original post)"
 }

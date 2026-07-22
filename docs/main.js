@@ -287,8 +287,22 @@
           if (pageType !== 'home') {
             html += '<p class="entry-body">' + escHtml(ev.description) + '</p>';
 
-            if (ev.source_url) {
-              html += '<a href="' + escAttr(ev.source_url) + '" target="_blank" rel="noopener noreferrer" class="entry-source-link">Read full article &rarr;</a>';
+            if (ev.source_url || ev.source_link) {
+              var link = ev.source_url || ev.source_link;
+              html += '<a href="' + escAttr(link) + '" target="_blank" rel="noopener noreferrer" class="entry-source-link">View original source &rarr;</a>';
+            }
+
+            if (ev.ig_handle || ev.x_handle) {
+              html += '<div class="social-handles">';
+              if (ev.ig_handle) {
+                var cleanIg = ev.ig_handle.startsWith('@') ? ev.ig_handle.substring(1) : ev.ig_handle;
+                html += '<a href="https://instagram.com/' + escAttr(cleanIg) + '" target="_blank" rel="noopener noreferrer" class="social-handle ig-handle">IG: ' + escHtml(ev.ig_handle) + '</a>';
+              }
+              if (ev.x_handle) {
+                var cleanX = ev.x_handle.startsWith('@') ? ev.x_handle.substring(1) : ev.x_handle;
+                html += '<a href="https://x.com/' + escAttr(cleanX) + '" target="_blank" rel="noopener noreferrer" class="social-handle x-handle">X: ' + escHtml(ev.x_handle) + '</a>';
+              }
+              html += '</div>';
             }
 
             if (ev.images && ev.images.length) {
