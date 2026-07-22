@@ -1,4 +1,4 @@
-# TWLD — The World's Largest Demockracy
+# TWLD - The World's Largest Demockracy
 
 In July 2026, thousands of young Indians marched peacefully to Parliament demanding accountability from their government. Police responded with tear gas and batons. This is a record of what happened, documented and maintained by the people who were there, not by any newsroom, party, or platform.
 
