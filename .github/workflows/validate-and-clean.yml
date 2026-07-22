@@ -1,4 +1,4 @@
-name: Validate entries and strip image metadata
+name: Validate, clean, and deploy
 
 on:
   pull_request:
@@ -10,12 +10,14 @@ on:
     paths:
       - 'data/events/**'
       - 'images/**'
+      - 'scripts/build-site.js'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  validate-and-clean:
+  validate-clean-deploy:
     runs-on: ubuntu-latest
     if: github.actor != 'github-actions[bot]'
     steps:
@@ -28,15 +30,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Validate all event JSON files
-        shell: bash
-        run: |
-          shopt -s nullglob
-          for file in data/events/*.json; do
-            echo "Checking $file"
-            node scripts/validate-entry.js "$file"
-          done
-
       - name: Install exiftool
         run: sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl
 
@@ -46,13 +39,26 @@ jobs:
             find images -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -exec exiftool -all= -overwrite_original {} \;
           fi
 
-      - name: Commit cleaned images if changed
+      - name: Validate all event JSON files
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for file in data/events/*.json; do
+            echo "Checking $file"
+            node scripts/validate-entry.js "$file"
+          done
+
+      - name: Build site
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node scripts/build-site.js
+
+      - name: Commit and push changes
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add images/
+          git add images/ docs/
           if ! git diff --staged --quiet; then
-            git commit -m "Strip EXIF metadata from images"
+            git commit -m "Strip EXIF metadata and rebuild site"
             git push
           fi
