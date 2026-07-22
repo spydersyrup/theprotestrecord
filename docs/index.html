@@ -656,22 +656,22 @@ body {
     <aside class="sidebar" id="sidebar">
       <header class="masthead" id="site-header">
         <div class="masthead-brand">
-          <h1 class="masthead-title"><a href="./index.html" class="masthead-link">TWLD</a></h1>
+          <h1 class="masthead-title"><a href="./" class="masthead-link">TWLD</a></h1>
           <p class="masthead-sub">The World's Largest Democracy / Community Protest Archive</p>
         </div>
       </header>
 
       <nav class="sidebar-nav">
         <ul class="nav-links">
-          <li><a href="./index.html" class="nav-link active">Home</a></li>
+          <li><a href="./" class="nav-link active">Home</a></li>
           
-          <li><a href="./photos-videos/index.html" class="nav-link ">Photos & Videos</a></li>
+          <li><a href="./photos-videos/" class="nav-link ">Photos & Videos</a></li>
           
-          <li><a href="./stories/index.html" class="nav-link ">Stories</a></li>
+          <li><a href="./stories/" class="nav-link ">Stories</a></li>
           
-          <li><a href="./art-memes/index.html" class="nav-link ">Art & Memes</a></li>
+          <li><a href="./art-memes/" class="nav-link ">Art & Memes</a></li>
           
-          <li><a href="./news-articles/index.html" class="nav-link ">News Articles</a></li>
+          <li><a href="./news-articles/" class="nav-link ">News Articles</a></li>
           
         </ul>
       </nav>
@@ -918,7 +918,7 @@ body {
       if (pageType === 'home') {
         var viewAll = document.createElement('a');
         viewAll.className = 'view-all-link';
-        viewAll.href = depth + cat.id + '/index.html';
+        viewAll.href = depth + cat.id + '/';
         viewAll.innerHTML = 'View all ' + cat.label + ' &rarr;';
         catSection.appendChild(viewAll);
       }

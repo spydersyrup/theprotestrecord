@@ -132,16 +132,16 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
     <aside class="sidebar" id="sidebar">
       <header class="masthead" id="site-header">
         <div class="masthead-brand">
-          <h1 class="masthead-title"><a href="${depth}index.html" class="masthead-link">TWLD</a></h1>
+          <h1 class="masthead-title"><a href="${depth}" class="masthead-link">TWLD</a></h1>
           <p class="masthead-sub">The World's Largest Democracy / Community Protest Archive</p>
         </div>
       </header>
 
       <nav class="sidebar-nav">
         <ul class="nav-links">
-          <li><a href="${depth}index.html" class="nav-link ${pageType === 'home' ? 'active' : ''}">Home</a></li>
+          <li><a href="${depth}" class="nav-link ${pageType === 'home' ? 'active' : ''}">Home</a></li>
           ${categories.map(c => `
-          <li><a href="${depth}${c.id}/index.html" class="nav-link ${categoryId === c.id ? 'active' : ''}">${c.label}</a></li>
+          <li><a href="${depth}${c.id}/" class="nav-link ${categoryId === c.id ? 'active' : ''}">${c.label}</a></li>
           `).join('')}
         </ul>
       </nav>
@@ -1036,7 +1036,7 @@ function getJS() {
       if (pageType === 'home') {
         var viewAll = document.createElement('a');
         viewAll.className = 'view-all-link';
-        viewAll.href = depth + cat.id + '/index.html';
+        viewAll.href = depth + cat.id + '/';
         viewAll.innerHTML = 'View all ' + cat.label + ' &rarr;';
         catSection.appendChild(viewAll);
       }
