@@ -445,7 +445,8 @@ body {
 }
 
 .gallery-single .gallery-thumb {
-  max-height: 250px;
+  max-width: 350px;
+  max-height: 350px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -473,8 +474,8 @@ body {
 }
 
 .gallery-single .gallery-thumb img {
-  max-width: 100%;
-  max-height: 250px;
+  max-width: 350px;
+  max-height: 350px;
   width: auto;
   height: auto;
   object-fit: contain;
