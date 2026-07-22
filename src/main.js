@@ -7,7 +7,7 @@
   var categoryId = window.__CATEGORY_ID__;
   var depth = window.__DEPTH__ || './';
 
-  var timelineEl = document.getElementById('timeline-events');
+  var timelineEl = document.getElementById('timeline-container');
   var emptyState = document.getElementById('empty-state');
   var cwToggle = document.getElementById('cw-checkbox');
   var mobileToggle = document.getElementById('mobile-menu-toggle');
