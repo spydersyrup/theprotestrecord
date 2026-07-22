@@ -820,6 +820,16 @@ body {
   width: 100%;
 }
 
+/* Force light theme for Tally Form */
+.tally-container {
+  --bg-card:        #FFFFFF;
+  --text:           #1C1B1A;
+  --text-secondary: #4A4641;
+  --rule:           #E4DFD5;
+  background: var(--bg-card);
+  color: var(--text);
+}
+
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;

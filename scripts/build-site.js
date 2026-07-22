@@ -208,7 +208,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
               <a href="https://github.com/spydersyrup/TWLD" target="_blank" rel="noopener noreferrer" class="submit-btn-outline">View GitHub Repo &rarr;</a>
               <a href="https://github.com/spydersyrup/TWLD/blob/main/contributing.md" target="_blank" rel="noopener noreferrer" class="submit-link">Read the contribution guide</a>
             </div>
-            <div class="submit-card">
+            <div class="submit-card tally-container">
               <h3>Submit a photo or video</h3>
               <p>No GitHub needed. Upload raw footage or images directly via our submission form. We will review and verify before it goes live.</p>
               <div style="margin-top: 2rem;">
