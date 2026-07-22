@@ -308,7 +308,8 @@
             }
 
             if (ev.images && ev.images.length) {
-              html += '<div class="entry-gallery">';
+              var countClass = ev.images.length === 1 ? ' gallery-single' : (ev.images.length === 2 ? ' gallery-double' : ' gallery-multi');
+              html += '<div class="entry-gallery' + countClass + '">';
               ev.images.forEach(function (img, imgIdx) {
                 var src = depth + 'images/' + img;
                 html += '<div class="gallery-thumb" data-event-id="' + escAttr(ev.id) + '" data-img-index="' + imgIdx + '">';
