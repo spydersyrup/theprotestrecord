@@ -1,1 +1,13 @@
-
+{
+  "id": "string (e.g. 2026-07-20-jantar-mantar)",
+  "date": "YYYY-MM-DD",
+  "location": "string (e.g. Jantar Mantar, New Delhi)",
+  "title": "string (short headline for this entry)",
+  "description": "string (what happened, 1-3 sentences)",
+  "tags": ["array of strings, e.g. police-action, march, injury"],
+  "graphic_content": "boolean (true if depicts injury/violence)",
+  "images": ["array of filenames in /images/[date]/"],
+  "contributor": "string (name, initials, or 'Anonymous')",
+  "submitted_via": "github-pr | google-form",
+  "verified": "boolean (true once corroborated by a second source/submission)"
+}
