@@ -225,7 +225,6 @@
         }
       }
 
-      if (totalInCat === 0 && pageType !== 'home' && !searchQuery && !activeTag) return;
       if (totalInCat === 0 && pageType === 'home') return; // hide empty categories on home
       
       var catSection = document.createElement('section');
@@ -245,8 +244,11 @@
       if (totalInCat === 0) {
         var emptyP = document.createElement('p');
         emptyP.className = 'category-empty';
-        emptyP.textContent = 'No entries match your search.';
-        emptyP.style.fontStyle = 'italic';
+        if (searchQuery || activeTag) {
+          emptyP.textContent = 'No entries match your search or filter.';
+        } else {
+          emptyP.textContent = 'No items found yet.';
+        }
         emptyP.style.color = 'var(--text-muted)';
         emptyP.style.marginBottom = '2rem';
         catSection.appendChild(emptyP);
