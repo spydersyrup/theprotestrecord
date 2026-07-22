@@ -1,14 +1,14 @@
 {
-  "id": "2026-07-22-mural",
-  "date": "2026-07-22",
+  "id": "2026-07-19-poster",
+  "date": "2026-07-19",
   "location": "New Delhi",
-  "title": "Mural",
+  "title": "poster",
   "category": "art-posters",
   "description": "",
   "tags": [],
   "graphic_content": false,
   "images": [
-    "2026-07-22-mural.jpg"
+    "2026-07-19-poster.jpg"
   ],
   "contributor": "Anonymous",
   "submitted_via": "bulk-import",

@@ -1,14 +1,14 @@
 {
-  "id": "2026-07-22-mural",
+  "id": "2026-07-22-spideys",
   "date": "2026-07-22",
   "location": "New Delhi",
-  "title": "Mural",
-  "category": "art-posters",
+  "title": "Spideys",
+  "category": "photos-videos",
   "description": "",
   "tags": [],
   "graphic_content": false,
   "images": [
-    "2026-07-22-mural.jpg"
+    "2026-07-22-spideys.jpg"
   ],
   "contributor": "Anonymous",
   "submitted_via": "bulk-import",
