@@ -16,6 +16,7 @@
   var searchInput = document.getElementById('search-input');
   var clearSearchBtn = document.getElementById('clear-search');
   var themeToggle = document.getElementById('theme-toggle');
+  var emptyResetBtn = document.getElementById('empty-reset');
 
   var cwEnabled = true;
   var revealedCards = new Set();
@@ -78,6 +79,17 @@
       searchQuery = '';
       searchInput.value = '';
       clearSearchBtn.classList.add('hidden');
+      resetLimits();
+      renderTimeline();
+    });
+  }
+
+  if (emptyResetBtn) {
+    emptyResetBtn.addEventListener('click', function() {
+      searchQuery = '';
+      activeTag = null;
+      if (searchInput) searchInput.value = '';
+      if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
       resetLimits();
       renderTimeline();
     });
@@ -338,8 +350,17 @@
     });
 
     if (emptyState) {
-      if (visibleCount === 0 && (searchQuery || activeTag)) {
+      if (visibleCount === 0) {
         emptyState.classList.remove('hidden');
+        var emptyP = emptyState.querySelector('.empty-text');
+        
+        if (searchQuery || activeTag) {
+          if (emptyP) emptyP.textContent = 'No entries match your search.';
+          if (emptyResetBtn) emptyResetBtn.classList.remove('hidden');
+        } else {
+          if (emptyP) emptyP.textContent = 'No entries found.';
+          if (emptyResetBtn) emptyResetBtn.classList.add('hidden');
+        }
       } else {
         emptyState.classList.add('hidden');
       }
