@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const requiredFields = [
-  'id', 'date', 'location', 'title', 'description',
+  'id', 'date', 'location', 'title', 'category', 'description',
   'tags', 'graphic_content', 'images', 'contributor',
   'submitted_via', 'verified'
 ];
 
-const stringFields = ['id', 'location', 'title', 'description', 'contributor', 'submitted_via'];
+const stringFields = ['id', 'location', 'title', 'category', 'description', 'contributor', 'submitted_via'];
 const allowedSubmissionMethods = ['github-pr', 'google-form'];
 const tagPattern = /^[a-z0-9-]+$/;
 const imagePattern = /^[A-Za-z0-9._-]+\.(jpg|jpeg|png)$/i;
@@ -40,7 +40,7 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-const allowedFields = new Set(requiredFields);
+const allowedFields = new Set([...requiredFields, 'source_url']);
 const extra = Object.keys(entry).filter(key => !allowedFields.has(key));
 if (extra.length) {
   console.error(`${filePath}: unknown fields - ${extra.join(', ')}`);
@@ -94,6 +94,30 @@ if (!entry.id.startsWith(`${entry.date}-`)) {
 if (!allowedSubmissionMethods.includes(entry.submitted_via)) {
   console.error(`${filePath}: submitted_via must be github-pr or google-form`);
   process.exit(1);
+}
+
+const allowedCategories = ['photos-videos', 'stories', 'art-memes', 'news-articles'];
+if (!allowedCategories.includes(entry.category)) {
+  console.error(`${filePath}: category must be photos-videos, stories, art-memes, or news-articles`);
+  process.exit(1);
+}
+
+if (entry.category === 'news-articles') {
+  if (typeof entry.source_url !== 'string' || !entry.source_url.trim()) {
+    console.error(`${filePath}: source_url is required and must be a non-empty string for news-articles`);
+    process.exit(1);
+  }
+  try {
+    new URL(entry.source_url);
+  } catch (e) {
+    console.error(`${filePath}: source_url must be a valid URL`);
+    process.exit(1);
+  }
+} else if (entry.source_url !== undefined) {
+  if (typeof entry.source_url !== 'string' || (entry.source_url !== '' && !entry.source_url.trim())) {
+    console.error(`${filePath}: source_url must be a string if provided`);
+    process.exit(1);
+  }
 }
 
 if (typeof entry.graphic_content !== 'boolean') {

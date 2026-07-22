@@ -12,8 +12,9 @@ Include the date, rough location, and a short caption. We'll review it and add i
 
 1. Fork this repo
 2. Add a new JSON file under `/data/events/` following the format in `data/schema.json`
-3. Add your photos directly to `/images/` (no subfolders, just the file)
-4. Open a pull request
+3. Assign one of four categories in the `"category"` field (see Categories below)
+4. Add your photos directly to `/images/` (no subfolders, just the file)
+5. Open a pull request
 
 We'll review and merge it if it fits the format and the content checks out.
 

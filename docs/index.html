@@ -11,40 +11,714 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>${getCSS()}</style>
+  <style>
+:root {
+  --bg:             #F7F5F0;
+  --bg-card:        #FFFFFF;
+  --text:           #1C1B1A;
+  --text-secondary: #4A4641;
+  --text-muted:     #8B857A;
+  --accent:         #9D1A1A;
+  --rule:           #E4DFD5;
+  --rule-heavy:     #1C1B1A;
+  --cw-bg:          #FFF4F4;
+  --cw-text:        #8C1818;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 3rem 1.5rem;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 3rem 2.5rem;
+}
+
+/* Mobile Toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  background: var(--text);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--bg);
+  margin: 4px 0;
+}
+
+/* Masthead */
+.masthead-brand {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.masthead-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.masthead-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.masthead-sub {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 0.5rem;
+}
+
+/* Navigation Links */
+.sidebar-nav {
+  margin-bottom: 2.5rem;
+}
+
+.nav-links {
+  list-style: none;
+}
+
+.nav-links li {
+  margin-bottom: 0.25rem;
+}
+
+.nav-link {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(0,0,0,0.03);
+  color: var(--text);
+}
+
+.nav-link.active {
+  background: rgba(0,0,0,0.05);
+  color: var(--text);
+  font-weight: 600;
+}
+
+
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.cw-toggle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--rule-heavy);
+  border-radius: 40px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.cw-toggle.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.cw-toggle:hover { opacity: 0.8; }
+
+/* Intro */
+.home-intro {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.home-stats {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Categories */
+.category-section {
+  margin-bottom: 5rem;
+}
+
+.category-section:last-child {
+  margin-bottom: 0;
+}
+
+.colophon p { margin-bottom: 0.5rem; }
+.colophon p:last-child { margin-bottom: 0; }
+
+.footer-callout {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 1rem !important;
+}
+
+.category-eyebrow {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.category-header {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.category-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.view-all-link {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  margin-top: 1rem;
+  transition: opacity 0.2s ease;
+}
+
+.view-all-link:hover {
+  opacity: 0.7;
+}
+
+/* Entry */
+.entry {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  border-radius: 6px;
+  padding: 2.5rem 3rem;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+.entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.entry:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+}
+
+.entry-date {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.entry-location {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 1.75rem;
+}
+
+.entry-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.entry-body {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.entry-source-link {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: opacity 0.2s ease;
+}
+.entry-source-link:hover { opacity: 0.7; }
+
+.entry-tags {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.verified-stamp {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1A7B4A;
+  border: 1px solid #1A7B4A;
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  line-height: 1.4;
+}
+
+/* Image Gallery */
+.entry-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.gallery-thumb:hover {
+  border-color: var(--text);
+  transform: scale(1.02);
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Content Warning Bar */
+.cw-bar {
+  background: var(--cw-bg);
+  border-left: 3px solid var(--cw-text);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0 2rem;
+}
+
+.cw-bar.hidden { display: none; }
+.entry-content.hidden { display: none; }
+
+.cw-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.cw-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cw-text);
+  flex-shrink: 0;
+}
+
+.cw-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 150px;
+}
+
+.cw-reveal {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cw-text);
+  background: transparent;
+  border: 1px solid var(--cw-text);
+  border-radius: 3px;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.cw-reveal:hover {
+  background: var(--cw-text);
+  color: #fff;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(28, 27, 26, 0.95);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease;
+}
+
+.lightbox-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lightbox-close, .lightbox-nav {
+  position: absolute;
+  color: rgba(255,255,255,0.6);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.lightbox-close {
+  top: 1.5rem;
+  right: 2rem;
+  font-size: 2.5rem;
+}
+
+.lightbox-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  padding: 1rem;
+}
+
+.lightbox-close:hover, .lightbox-nav:hover { color: #fff; }
+.lightbox-prev { left: 1rem; }
+.lightbox-next { right: 1rem; }
+
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  user-select: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.lightbox-counter {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 5rem 1.5rem;
+}
+
+.empty-state.hidden { display: none; }
+
+.empty-text {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.empty-reset {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  background: none;
+  border: 1px solid var(--text);
+  border-radius: 40px;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-reset:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Footer */
+.colophon {
+  border-top: 1px solid var(--rule);
+  padding: 3rem 1.5rem;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.colophon-links { margin-top: 0.5rem; }
+
+.colophon-links a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.colophon-links a:hover { color: var(--text); }
+
+.sep { margin: 0 0.5rem; color: var(--rule); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 900;
+    background: var(--bg);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 4rem 1.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar.open {
+    transform: translateY(0);
+  }
+  
+  .main-content {
+    padding: 5rem 1.5rem 2rem;
+  }
+
+  .entry {
+    padding: 1.5rem;
+  }
+  
+  .category-header {
+    font-size: 1.8rem;
+  }
+  
+  .entry-title { font-size: 1.35rem; }
+
+  .cw-bar-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+  .entry { opacity: 1; transform: none; }
+}
+</style>
 </head>
 <body>
+  
+  <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+    <span class="hamburger"></span>
+    <span class="hamburger"></span>
+    <span class="hamburger"></span>
+  </button>
 
-  <header class="masthead" id="site-header">
-    <div class="masthead-inner">
-      <div class="masthead-brand">
-        <h1 class="masthead-title">TWLD</h1>
-        <p class="masthead-sub">The World's Largest Democracy / Community Protest Archive</p>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <header class="masthead" id="site-header">
+        <div class="masthead-brand">
+          <h1 class="masthead-title"><a href="./index.html" class="masthead-link">TWLD</a></h1>
+          <p class="masthead-sub">The World's Largest Democracy / Community Protest Archive</p>
+        </div>
+      </header>
+
+      <nav class="sidebar-nav">
+        <ul class="nav-links">
+          <li><a href="./index.html" class="nav-link active">Home</a></li>
+          
+          <li><a href="./photos-videos/index.html" class="nav-link ">Photos & Videos</a></li>
+          
+          <li><a href="./stories/index.html" class="nav-link ">Stories</a></li>
+          
+          <li><a href="./art-memes/index.html" class="nav-link ">Art & Memes</a></li>
+          
+          <li><a href="./news-articles/index.html" class="nav-link ">News Articles</a></li>
+          
+        </ul>
+      </nav>
+
+
+
+      <div class="sidebar-footer">
+        <button
+          type="button"
+          role="switch"
+          aria-checked="true"
+          aria-label="Toggle content warnings"
+          class="cw-toggle active"
+          id="cw-checkbox"
+        >Content warnings ON</button>
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked="true"
-        aria-label="Toggle content warnings"
-        class="cw-toggle active"
-        id="cw-checkbox"
-      >Content warnings ON</button>
-    </div>
-  </header>
+    </aside>
 
-  <nav class="filter-nav" id="tag-filter-bar" aria-label="Filter entries by tag">
-    <div class="filter-nav-inner">
-      <button class="filter-link active" data-tag="all" id="tag-all">All</button>
-    </div>
-  </nav>
+    <main class="main-content">
+      
+        <div class="home-intro">
+          <p>In July 2026, thousands of young Indians took to the streets. This is a record of what happened, built by the people who were there. Every entry is submitted, reviewed, and kept accurate by the community, not by any newsroom, party, or platform.</p>
+          <p class="home-stats">
+            1 entry across 4 categories
+             &bull; Last updated July 20, 2026
+          </p>
+        </div>
+      
+      
+      <div class="archive" id="timeline-container">
+        <div class="archive-entries" id="timeline-events"></div>
+      </div>
 
-  <main class="archive" id="timeline-container">
-    <div class="archive-entries" id="timeline-events"></div>
-  </main>
+      <div class="empty-state hidden" id="empty-state">
+        <p class="empty-text">No entries found.</p>
+      </div>
 
-  <div class="empty-state hidden" id="empty-state">
-    <p class="empty-text">No entries match this filter.</p>
-    <button class="empty-reset" id="empty-reset">Show all</button>
+      <footer class="colophon" id="site-footer">
+        <p class="footer-callout">Were you there? Add what you saw.</p>
+        <p>TWLD is an open-source, community-maintained archive. No single person or organization owns this record. Anyone can contribute, verify, or question it.</p>
+        <p class="colophon-links">
+          <a href="https://github.com/spydersyrup/TWLD">Contribute on GitHub</a>
+          <span class="sep">/</span>
+          <a href="./contributing.md">How to submit</a>
+        </p>
+      </footer>
+    </main>
   </div>
 
   <div class="lightbox-overlay hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
@@ -55,15 +729,6 @@
     <div class="lightbox-counter" id="lightbox-counter"></div>
   </div>
 
-  <footer class="colophon" id="site-footer">
-    <p>TWLD is an open-source, community-maintained archive.</p>
-    <p class="colophon-links">
-      <a href="https://github.com/spydersyrup/TWLD">Contribute on GitHub</a>
-      <span class="sep">/</span>
-      <a href="contributing.md">How to submit</a>
-    </p>
-  </footer>
-
   <noscript>
     <div style="padding:3rem;text-align:center;font-family:Inter,sans-serif;">
       <h2>JavaScript Required</h2>
@@ -72,8 +737,320 @@
   </noscript>
 
   <script>
-    window.__EVENTS__ = ${eventsJSON};
-    ${getJS()}
+    window.__EVENTS__ = [{"id":"2026-07-20-jantar-mantar","date":"2026-07-20","location":"Jantar Mantar, New Delhi","title":"March to Parliament on opening day of monsoon session","category":"photos-videos","description":"Thousands of youth protesters, part of the Cockroach Janta Party movement, marched toward Parliament demanding the Education Minister's resignation. Police used tear gas and batons; organizers reported it as the movement's largest protest yet.","tags":["police-action","march","parliament"],"graphic_content":true,"images":[],"contributor":"TWLD (seed entry)","submitted_via":"github-pr","verified":true}];
+    window.__CATEGORIES__ = [{"id":"photos-videos","label":"Photos & Videos"},{"id":"stories","label":"Stories"},{"id":"art-memes","label":"Art & Memes"},{"id":"news-articles","label":"News Articles"}];
+    window.__PAGE_TYPE__ = 'home';
+    window.__CATEGORY_ID__ = null;
+    window.__DEPTH__ = './';
+    
+(function () {
+  'use strict';
+
+  var events = window.__EVENTS__ || [];
+  var categories = window.__CATEGORIES__ || [];
+  var pageType = window.__PAGE_TYPE__ || 'home';
+  var categoryId = window.__CATEGORY_ID__;
+  var depth = window.__DEPTH__ || './';
+
+  var timelineEl = document.getElementById('timeline-events');
+  var emptyState = document.getElementById('empty-state');
+  var cwToggle = document.getElementById('cw-checkbox');
+  var mobileToggle = document.getElementById('mobile-menu-toggle');
+  var sidebar = document.getElementById('sidebar');
+
+  var cwEnabled = true;
+  var revealedCards = new Set();
+  
+  var observer;
+
+  // Mobile menu
+  mobileToggle.addEventListener('click', function () {
+    sidebar.classList.toggle('open');
+  });
+
+  // CW preference
+  try {
+    var storedCw = localStorage.getItem('twld-cw');
+    if (storedCw === 'off') {
+      cwEnabled = false;
+      cwToggle.classList.remove('active');
+      cwToggle.textContent = 'Content warnings OFF';
+      cwToggle.setAttribute('aria-checked', 'false');
+    }
+  } catch (e) {}
+
+  cwToggle.addEventListener('click', function () {
+    cwEnabled = !cwEnabled;
+    cwToggle.classList.toggle('active', cwEnabled);
+    cwToggle.textContent = cwEnabled ? 'Content warnings ON' : 'Content warnings OFF';
+    cwToggle.setAttribute('aria-checked', cwEnabled ? 'true' : 'false');
+    try {
+      localStorage.setItem('twld-cw', cwEnabled ? 'on' : 'off');
+    } catch (e) {}
+    renderTimeline();
+  });
+
+
+
+  function renderTimeline() {
+    timelineEl.innerHTML = '';
+    var visibleCount = 0;
+
+    var catsToRender = categories;
+    if (pageType === 'category') {
+      catsToRender = categories.filter(function(c) { return c.id === categoryId; });
+    }
+
+    catsToRender.forEach(function (cat) {
+      var catEvents = events.filter(function (ev) {
+        return ev.category === cat.id;
+      });
+      
+      var totalInCat = catEvents.length;
+      var visibleCatEvents = catEvents;
+
+      if (visibleCatEvents.length === 0 && pageType !== 'home') return;
+      
+      if (pageType === 'home') {
+        visibleCatEvents = visibleCatEvents.slice(0, 3);
+      }
+
+      var catSection = document.createElement('section');
+      catSection.className = 'category-section';
+
+      var catEyebrow = document.createElement('span');
+      catEyebrow.className = 'category-eyebrow';
+      catEyebrow.textContent = 'SECTION';
+      catSection.appendChild(catEyebrow);
+
+      var catHeader = document.createElement('h2');
+      catHeader.className = 'category-header';
+      var entryText = totalInCat === 1 ? 'entry' : 'entries';
+      catHeader.innerHTML = cat.label + ' <span class="category-count">' + totalInCat + ' ' + entryText + '</span>';
+      catSection.appendChild(catHeader);
+
+      if (visibleCatEvents.length === 0) {
+        var emptyP = document.createElement('p');
+        emptyP.className = 'category-empty';
+        emptyP.textContent = 'No entries yet.';
+        emptyP.style.fontStyle = 'italic';
+        emptyP.style.color = 'var(--text-muted)';
+        emptyP.style.marginBottom = '2rem';
+        catSection.appendChild(emptyP);
+      } else {
+        visibleCatEvents.forEach(function (ev) {
+        visibleCount++;
+
+        var card = document.createElement('article');
+        card.className = 'entry';
+        card.setAttribute('data-id', ev.id);
+        card.setAttribute('data-graphic', ev.graphic_content ? 'true' : 'false');
+        card.id = 'event-' + ev.id;
+
+        var dateObj = new Date(ev.date + 'T00:00:00Z');
+        var dateStr = dateObj.toLocaleDateString('en-IN', {
+          weekday: 'short', year: 'numeric', month: 'long', day: 'numeric',
+          timeZone: 'UTC'
+        });
+
+        var isHidden = ev.graphic_content && cwEnabled && !revealedCards.has(ev.id);
+        var html = '';
+
+        // Date and location (always visible)
+        html += '<time class="entry-date">' + escHtml(dateStr) + '</time>';
+        html += '<div class="entry-location">' + escHtml(ev.location) + '</div>';
+
+        // Content warning bar for graphic entries
+        if (ev.graphic_content) {
+          html += '<div class="cw-bar' + (isHidden ? '' : ' hidden') + '" data-cw-for="' + escAttr(ev.id) + '">';
+          html += '<div class="cw-bar-inner">';
+          html += '<span class="cw-label">Content Warning</span>';
+          html += '<span class="cw-desc">This entry documents graphic content depicting violence or injury.</span>';
+          html += '<button class="cw-reveal" data-reveal="' + escAttr(ev.id) + '">Reveal</button>';
+          html += '</div></div>';
+        }
+
+        // Entry content (hidden when CW is active for graphic entries)
+        html += '<div class="entry-content' + (isHidden ? ' hidden' : '') + '">';
+
+        html += '<h3 class="entry-title">' + escHtml(ev.title) + '</h3>';
+        
+        if (pageType !== 'home') {
+          html += '<p class="entry-body">' + escHtml(ev.description) + '</p>';
+
+          if (ev.source_url) {
+            html += '<a href="' + escAttr(ev.source_url) + '" target="_blank" rel="noopener noreferrer" class="entry-source-link">Read full article &rarr;</a>';
+          }
+
+          // Image gallery
+          if (ev.images && ev.images.length) {
+            html += '<div class="entry-gallery">';
+            ev.images.forEach(function (img, imgIdx) {
+              var src = depth + 'images/' + img;
+              html += '<div class="gallery-thumb" data-event-id="' + escAttr(ev.id) + '" data-img-index="' + imgIdx + '">';
+              html += '<img src="' + escAttr(src) + '" alt="Photo from ' + escAttr(ev.title) + '" loading="lazy">';
+              html += '</div>';
+            });
+            html += '</div>';
+          }
+
+          // Tags as slash-separated text
+          if (ev.tags && ev.tags.length) {
+            html += '<div class="entry-tags">' + ev.tags.map(escHtml).join(' / ') + '</div>';
+          }
+
+          // Meta line
+          html += '<div class="entry-meta">';
+          if (ev.verified) {
+            html += '<span class="verified-stamp">Verified</span>';
+          }
+          html += '<span>Contributed by ' + escHtml(ev.contributor) + '</span>';
+          html += '</div>';
+        }
+
+        html += '</div>'; // close .entry-content
+
+        card.innerHTML = html;
+        catSection.appendChild(card);
+      });
+      } // end else
+
+      if (pageType === 'home') {
+        var viewAll = document.createElement('a');
+        viewAll.className = 'view-all-link';
+        viewAll.href = depth + cat.id + '/index.html';
+        viewAll.innerHTML = 'View all ' + cat.label + ' &rarr;';
+        catSection.appendChild(viewAll);
+      }
+
+      timelineEl.appendChild(catSection);
+    });
+
+    if (visibleCount === 0) {
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+    }
+
+    observeCards();
+    bindGalleryClicks();
+    bindCWReveals();
+  }
+
+
+
+  // Escaping helpers
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+  function escAttr(str) { return escHtml(str); }
+
+  // Intersection Observer for fade in
+  function observeCards() {
+    if (observer) observer.disconnect();
+    
+    if (!('IntersectionObserver' in window)) {
+      document.querySelectorAll('.entry').forEach(function(e) { e.classList.add('visible'); });
+      return;
+    }
+
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (ent) {
+        if (ent.isIntersecting) {
+          ent.target.classList.add('visible');
+          observer.unobserve(ent.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -50px 0px', threshold: 0 });
+
+    document.querySelectorAll('.entry').forEach(function(e) { observer.observe(e); });
+  }
+
+  // CW Reveals
+  function bindCWReveals() {
+    var btns = document.querySelectorAll('.cw-reveal');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-reveal');
+        revealedCards.add(id);
+        
+        var card = document.getElementById('event-' + id);
+        if (card) {
+          var bar = card.querySelector('.cw-bar');
+          var content = card.querySelector('.entry-content');
+          if (bar) bar.classList.add('hidden');
+          if (content) content.classList.remove('hidden');
+        }
+      });
+    });
+  }
+
+  // Lightbox
+  var lightbox = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+  var lbCounter = document.getElementById('lightbox-counter');
+  
+  var currentLightboxEv = null;
+  var currentLightboxIdx = 0;
+
+  function bindGalleryClicks() {
+    var thumbs = document.querySelectorAll('.gallery-thumb');
+    thumbs.forEach(function (th) {
+      th.addEventListener('click', function () {
+        var evId = th.getAttribute('data-event-id');
+        var idx = parseInt(th.getAttribute('data-img-index'), 10);
+        
+        var ev = events.find(function(e) { return e.id === evId; });
+        if (!ev || !ev.images || ev.images.length === 0) return;
+        
+        currentLightboxEv = ev;
+        showLightboxImage(idx);
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+  }
+
+  function showLightboxImage(idx) {
+    if (!currentLightboxEv) return;
+    var imgs = currentLightboxEv.images;
+    if (idx < 0) idx = imgs.length - 1;
+    if (idx >= imgs.length) idx = 0;
+    
+    currentLightboxIdx = idx;
+    lbImg.src = depth + 'images/' + imgs[idx];
+    lbImg.alt = currentLightboxEv.title;
+    lbCounter.textContent = (idx + 1) + ' / ' + imgs.length;
+  }
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-prev').addEventListener('click', function() { showLightboxImage(currentLightboxIdx - 1); });
+  document.getElementById('lightbox-next').addEventListener('click', function() { showLightboxImage(currentLightboxIdx + 1); });
+  
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (lightbox.classList.contains('hidden')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showLightboxImage(currentLightboxIdx - 1);
+    if (e.key === 'ArrowRight') showLightboxImage(currentLightboxIdx + 1);
+  });
+
+  function closeLightbox() {
+    lightbox.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // Init
+  renderTimeline();
+
+})();
+
   </script>
 </body>
 </html>
