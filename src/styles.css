@@ -626,6 +626,72 @@ body {
   letter-spacing: 0.05em;
 }
 
+.social-handles {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.social-handle {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  background: var(--bg);
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  border: 1px solid var(--rule);
+  transition: all 0.2s ease;
+}
+
+.social-handle:hover {
+  background: var(--rule);
+  color: var(--text);
+}
+
+/* Native Social Embeds */
+.social-embed-wrapper {
+  margin: 1.5rem 0;
+  width: 100%;
+  max-width: 550px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  /* Prevent huge iframes from breaking layout */
+}
+
+/* Fallback styling for strict privacy browsers */
+.social-embed-wrapper blockquote {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--text-muted);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.social-embed-wrapper blockquote a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.social-embed-wrapper blockquote a:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode specific tweaks for Twitter */
+.dark-mode .twitter-tweet {
+  color-scheme: dark;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

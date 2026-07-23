@@ -15,6 +15,20 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
+
+const Template = require('../src/template.js');
+
+function renderSocialEmbed(url) {
+  if (!url) return '';
+  if (url.match(/instagram\.com\/(?:p|reel)\//)) {
+    return `<div class="social-embed-wrapper"><blockquote class="instagram-media" data-instgrm-permalink="${url}" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin: 1px;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);"><a href="${url}" style="background:#FFFFFF;line-height:0;padding:0 0;text-align:center;text-decoration:none;width:100%;font-family:Arial,sans-serif;font-size:14px;font-style:normal;font-weight:550;line-height:18px;">View post on Instagram</a></blockquote></div>`;
+  }
+  if (url.match(/(?:x\.com|twitter\.com)\/.*\/status\//)) {
+    return `<div class="social-embed-wrapper"><blockquote class="twitter-tweet" data-dnt="true"><a href="${url}">View post on X</a></blockquote></div>`;
+  }
+  return '';
+}
+
 const EVENTS_DIR = path.join(ROOT, 'data', 'events');
 const IMAGES_DIR = path.join(ROOT, 'data', 'images');
 const DOCS_DIR = path.join(ROOT, 'docs');
@@ -104,8 +118,9 @@ fs.writeFileSync(path.join(submitDir, 'index.html'), submitHTML, 'utf-8');
 fs.writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '', 'utf-8');
 
 // Copy Shared Assets to docs/
-fs.copyFileSync(path.join(__dirname, '../src/styles.css'), path.join(DOCS_DIR, 'styles.css'));
-fs.copyFileSync(path.join(__dirname, '../src/main.js'), path.join(DOCS_DIR, 'main.js'));
+fs.copyFileSync(path.join(ROOT, 'src', 'styles.css'), path.join(DOCS_DIR, 'styles.css'));
+fs.copyFileSync(path.join(ROOT, 'src', 'main.js'), path.join(DOCS_DIR, 'main.js'));
+fs.copyFileSync(path.join(ROOT, 'src', 'template.js'), path.join(DOCS_DIR, 'template.js'));
 
 // Generate Sitemap and Robots.txt
 let sitemapXML = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
@@ -144,7 +159,6 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
   }
   
   // HTML escaping for noscript fallback
-  const esc = str => (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
   const filteredEvents = pageType === 'category' ? events.filter(e => e.category === categoryId) : events;
   
   function renderStaticTimeline() {
@@ -167,58 +181,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
       } else {
         if (pageType === 'home') html += `<div class="entries-grid">`;
         for (const ev of visibleEvents) {
-          const dateStr = new Date(ev.date + 'T00:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
-          const compactClass = pageType === 'home' ? ' entry-compact' : '';
-          html += `<article class="entry${compactClass}" id="event-${ev.id}" data-id="${ev.id}">`;
-          html += `<time class="entry-date">${esc(dateStr)}</time>`;
-          html += `<div class="entry-location">${esc(ev.location)}</div>`;
-          html += `<div class="entry-content">`;
-          
-          if (pageType === 'home' && ev.images && ev.images.length) {
-            html += `<div style="display:flex; align-items:flex-start; gap: 1.5rem;">`;
-            const firstImg = ev.images[0];
-            const src = `${depth}images/${firstImg}`;
-            const isVideo = src.match(/\\.(mp4|webm|mov)$/i);
-            html += `<div class="home-thumbnail" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.1);">`;
-            if (isVideo) {
-              html += `<video src="${esc(src)}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>`;
-            } else {
-              html += `<img src="${esc(src)}" style="width:100%;height:100%;object-fit:cover;" alt="Thumbnail" loading="lazy">`;
-            }
-            html += `</div>`;
-            html += `<h3 class="entry-title" style="margin-top:0;">${esc(ev.title)}</h3>`;
-            html += `</div>`;
-          } else {
-            html += `<h3 class="entry-title">${esc(ev.title)}</h3>`;
-          }
-          if (pageType !== 'home') {
-            html += `<p class="entry-body">${esc(ev.description)}</p>`;
-            if (ev.source_link) {
-              html += `<a href="${esc(ev.source_link)}" target="_blank" rel="noopener noreferrer" class="entry-source-link">View original source &rarr;</a>`;
-            }
-            if (ev.socials) {
-              html += `<div class="social-handles"><span class="social-handle">Socials: ${esc(ev.socials)}</span></div>`;
-            }
-            if (ev.images && ev.images.length) {
-              html += `<div class="entry-gallery${ev.images.length === 1 ? ' gallery-single' : ' gallery-multi'}">`;
-              ev.images.forEach((img, idx) => {
-                const src = `${depth}images/${img}`;
-                html += `<div class="gallery-thumb" data-event-id="${ev.id}" data-img-index="${idx}">`;
-                if (img.match(/\\.(mp4|webm|mov)$/i)) {
-                  html += `<video src="${src}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>`;
-                } else {
-                  html += `<img src="${src}" alt="Photo from ${esc(ev.title)}" loading="lazy">`;
-                }
-                html += `</div>`;
-              });
-              html += `</div>`;
-            }
-            if (ev.tags && ev.tags.length) {
-              html += `<div class="entry-tags">` + ev.tags.map(t => `<button class="tag-btn" data-tag="${esc(t)}">#${esc(t)}</button>`).join(' ') + `</div>`;
-            }
-            html += `<div class="entry-meta"><span>Contributed by ${esc(ev.contributor)}</span></div>`;
-          }
-          html += `</div></article>`;
+          html += Template.renderEventCard(ev, pageType, depth);
         }
         if (pageType === 'home') html += `</div>`;
       }
@@ -246,8 +209,11 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${depth}styles.css?v=${Date.now()}">
+  <script src="${depth}template.js?v=${Date.now()}"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script async src="https://tally.so/widgets/embed.js"></script>
+  <script async src="//www.instagram.com/embed.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </head>
 <body>
   

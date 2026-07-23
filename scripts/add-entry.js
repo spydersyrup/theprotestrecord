@@ -1,6 +1,6 @@
 const readline = require('readline');
-const fs = require('fs');
 const path = require('path');
+const utils = require('./utils');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -49,11 +49,15 @@ async function run() {
   if (socials) event.socials = socials;
   if (source_link) event.source_link = source_link;
 
-  const filepath = path.join(__dirname, '..', 'data', 'events', `${id}.json`);
-  fs.writeFileSync(filepath, JSON.stringify(event, null, 2));
+  const eventsDir = path.join(__dirname, '..', 'data', 'events');
+  try {
+    const filepath = utils.saveEvent(eventsDir, event);
+    console.log(`\n[SUCCESS] Created ${filepath}`);
+    console.log('You can now run publish.bat to push it to the live site!');
+  } catch (err) {
+    console.error(`\n[ERROR] Failed to create entry: ${err.message}`);
+  }
   
-  console.log(`\n[SUCCESS] Created ${filepath}`);
-  console.log('You can now run publish.bat to push it to the live site!');
   rl.close();
 }
 

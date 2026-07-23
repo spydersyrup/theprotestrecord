@@ -1,6 +1,7 @@
 const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
+const utils = require('./utils');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -90,10 +91,12 @@ async function run() {
     fs.renameSync(path.join(picsDir, file), path.join(targetImgDir, newFilename));
     
     // 2. Save JSON to data/events/
-    const filepath = path.join(eventsDir, `${id}.json`);
-    fs.writeFileSync(filepath, JSON.stringify(event, null, 2));
-    
-    console.log(`[SAVED] Created entry and moved image to data/images/!`);
+    try {
+      utils.saveEvent(eventsDir, event);
+      console.log(`[SAVED] Created entry and moved image to data/images/!`);
+    } catch (err) {
+      console.error(`[ERROR] Failed to save entry: ${err.message}`);
+    }
     console.log("");
   }
 

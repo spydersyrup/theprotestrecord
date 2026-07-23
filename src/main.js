@@ -32,6 +32,20 @@
     if (window.lucide) window.lucide.createIcons();
   }
 
+  function renderSocialEmbed(url) {
+    if (!url) return '';
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    var theme = isDark ? 'dark' : 'light';
+    
+    if (url.match(/instagram\.com\/(?:p|reel)\//)) {
+      return '<div class="social-embed-wrapper"><blockquote class="instagram-media" data-instgrm-permalink="' + escAttr(url) + '" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin: 1px;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);"><a href="' + escAttr(url) + '" style="background:#FFFFFF;line-height:0;padding:0 0;text-align:center;text-decoration:none;width:100%;font-family:Arial,sans-serif;font-size:14px;font-style:normal;font-weight:550;line-height:18px;">View post on Instagram</a></blockquote></div>';
+    }
+    if (url.match(/(?:x\.com|twitter\.com)\/.*\/status\//)) {
+      return '<div class="social-embed-wrapper"><blockquote class="twitter-tweet" data-dnt="true" data-theme="' + theme + '"><a href="' + escAttr(url) + '">View post on X</a></blockquote></div>';
+    }
+    return '';
+  }
+
   // Dark Mode
   function setTheme(isDark) {
     if (isDark) {
@@ -43,6 +57,11 @@
     }
     initLucide();
     try { localStorage.setItem('twld-theme', isDark ? 'dark' : 'light'); } catch (e) {}
+    
+    // Refresh timeline to regenerate embed themes if they exist
+    if (pageType !== 'submit' && timelineEl && timelineEl.innerHTML.indexOf('social-embed-wrapper') > -1) {
+      renderTimeline();
+    }
   }
   
   try {
@@ -146,7 +165,7 @@
     if (activeTag && pageType !== 'home') {
       var tagHeader = document.createElement('div');
       tagHeader.className = 'active-tag-filter';
-      tagHeader.innerHTML = 'Showing entries for: ' + escHtml(activeTag) + 
+      tagHeader.innerHTML = 'Showing entries for: ' + window.Template.esc(activeTag) + 
         ' <button aria-label="Clear filter" data-clear-tag><i data-lucide="x"></i></button>';
       timelineEl.appendChild(tagHeader);
     }
@@ -263,122 +282,14 @@
         visibleCatEvents.forEach(function (ev) {
           visibleCount++;
 
-          var card = document.createElement('article');
-          card.className = 'entry' + (pageType === 'home' ? ' entry-compact' : '');
-          card.setAttribute('data-id', ev.id);
-          card.setAttribute('data-graphic', ev.graphic_content ? 'true' : 'false');
-          card.id = 'event-' + ev.id;
-
-          var dateObj = new Date(ev.date + 'T00:00:00Z');
-          var dateStr = dateObj.toLocaleDateString('en-IN', {
-            weekday: 'short', year: 'numeric', month: 'long', day: 'numeric',
-            timeZone: 'UTC'
-          });
-
+          var isDark = document.documentElement.classList.contains('dark-mode');
           var isHidden = ev.graphic_content && cwEnabled && !revealedCards.has(ev.id);
-          var html = '';
-
-          html += '<time class="entry-date">' + escHtml(dateStr) + '</time>';
-          html += '<div class="entry-location">' + escHtml(ev.location) + '</div>';
-
-          if (ev.graphic_content) {
-            html += '<div class="cw-bar' + (isHidden ? '' : ' hidden') + '" data-cw-for="' + escAttr(ev.id) + '">';
-            html += '<div class="cw-bar-inner">';
-            html += '<span class="cw-label">Content Warning</span>';
-            html += '<span class="cw-desc">This entry documents graphic content depicting violence or injury.</span>';
-            html += '<button class="cw-reveal" data-reveal="' + escAttr(ev.id) + '">Reveal</button>';
-            html += '</div></div>';
-          }
-
-          html += '<div class="entry-content' + (isHidden ? ' hidden' : '') + '">';
+          var html = window.Template.renderEventCard(ev, pageType, depth, isDark, isHidden);
           
-          if (pageType === 'home' && ev.images && ev.images.length) {
-            html += '<div style="display:flex; align-items:flex-start; gap: 1.5rem;">';
-            var firstImg = ev.images[0];
-            var src = depth + 'images/' + firstImg;
-            var isVideo = src.match(/\\.(mp4|webm|mov)$/i);
-            html += '<div class="home-thumbnail" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.1);">';
-            if (isVideo) {
-               html += '<video src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>';
-            } else {
-               html += '<img src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;" alt="Thumbnail" loading="lazy">';
-            }
-            html += '</div>';
-            html += '<h3 class="entry-title" style="margin-top:0;">' + escHtml(ev.title) + '</h3>';
-            html += '</div>';
-          } else {
-            html += '<h3 class="entry-title">' + escHtml(ev.title) + '</h3>';
-          }
-          if (pageType !== 'home') {
-            html += '<p class="entry-body">' + escHtml(ev.description) + '</p>';
-
-            if (ev.source_url || ev.source_link) {
-              var link = ev.source_url || ev.source_link;
-              html += '<a href="' + escAttr(link) + '" target="_blank" rel="noopener noreferrer" class="entry-source-link">View original source &rarr;</a>';
-            }
-
-            if (ev.ig_handle || ev.x_handle || ev.socials) {
-              html += '<div class="social-handles">';
-              if (ev.ig_handle) {
-                var cleanIg = ev.ig_handle.startsWith('@') ? ev.ig_handle.substring(1) : ev.ig_handle;
-                html += '<a href="https://instagram.com/' + escAttr(cleanIg) + '" target="_blank" rel="noopener noreferrer" class="social-handle ig-handle">IG: ' + escHtml(ev.ig_handle) + '</a>';
-              }
-              if (ev.x_handle) {
-                var cleanX = ev.x_handle.startsWith('@') ? ev.x_handle.substring(1) : ev.x_handle;
-                html += '<a href="https://x.com/' + escAttr(cleanX) + '" target="_blank" rel="noopener noreferrer" class="social-handle x-handle">X: ' + escHtml(ev.x_handle) + '</a>';
-              }
-              if (ev.socials) {
-                html += '<span class="social-handle">Socials: ' + escHtml(ev.socials) + '</span>';
-              }
-              html += '</div>';
-            }
-
-            if (ev.images && ev.images.length) {
-              var countClass = ev.images.length === 1 ? ' gallery-single' : (ev.images.length === 2 ? ' gallery-double' : ' gallery-multi');
-              html += '<div class="entry-gallery' + countClass + '">';
-              ev.images.forEach(function (img, imgIdx) {
-                var src = depth + 'images/' + img;
-                var isVideo = src.match(/\\.(mp4|webm|mov)$/i);
-                html += '<div class="gallery-thumb" data-event-id="' + escAttr(ev.id) + '" data-img-index="' + imgIdx + '">';
-                if (isVideo) {
-                  html += '<video src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>';
-                } else {
-                  html += '<img src="' + escAttr(src) + '" alt="Photo from ' + escAttr(ev.title) + '" loading="lazy">';
-                }
-                html += '</div>';
-              });
-              html += '</div>';
-            }
-
-            if (ev.tags && ev.tags.length) {
-              html += '<div class="entry-tags">';
-              ev.tags.forEach(function(t) {
-                var isActive = activeTag === t;
-                html += '<button class="tag-btn ' + (isActive ? 'active' : '') + '" data-tag="' + escAttr(t) + '">#' + escHtml(t) + '</button> ';
-              });
-              html += '</div>';
-            }
-
-            html += '<div class="entry-meta">';
-            if (ev.verified) {
-              html += '<span class="verified-stamp">Verified</span>';
-            }
-            html += '<span>Contributed by ' + escHtml(ev.contributor) + '</span>';
-            
-            // Share Button
-            html += '<button class="share-btn" data-share-id="' + escAttr(ev.id) + '" data-share-title="' + escAttr(ev.title) + '" data-share-cat="' + escAttr(cat.id) + '">';
-            html += '<i data-lucide="share-2"></i> Share';
-            html += '</button>';
-
-            html += '</div>';
-          }
-
-          html += '</div>';
-          card.innerHTML = html;
           if (gridWrapper) {
-            gridWrapper.appendChild(card);
+            gridWrapper.insertAdjacentHTML('beforeend', html);
           } else {
-            catSection.appendChild(card);
+            catSection.insertAdjacentHTML('beforeend', html);
           }
         });
       }
@@ -425,6 +336,8 @@
     bindTags();
     bindShares();
     initLucide();
+    if (window.twttr && window.twttr.widgets) window.twttr.widgets.load(timelineEl);
+    if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
   }
 
   // Tags

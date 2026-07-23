@@ -1,16 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-
-const requiredFields = [
-  'id', 'date', 'location', 'title', 'category', 'description',
-  'tags', 'graphic_content', 'images', 'contributor',
-  'submitted_via', 'verified'
-];
-
-const stringFields = ['id', 'location', 'title', 'category', 'contributor', 'submitted_via'];
-const allowedSubmissionMethods = ['github-pr', 'google-form', 'bulk-import'];
-const tagPattern = /^[a-z0-9-]+$/;
-const imagePattern = /^[A-Za-z0-9._-]+\.(jpg|jpeg|png)$/i;
+const utils = require('./utils');
 
 const filePath = process.argv[2];
 
@@ -34,28 +24,10 @@ try {
   process.exit(1);
 }
 
-const missing = requiredFields.filter(field => !(field in entry));
-if (missing.length > 0) {
-  console.error(`${filePath}: missing fields - ${missing.join(', ')}`);
-  process.exit(1);
-}
-
-const allowedFields = new Set([...requiredFields, 'source_url', 'ig_handle', 'x_handle', 'source_link']);
-const extra = Object.keys(entry).filter(key => !allowedFields.has(key));
-if (extra.length) {
-  console.error(`${filePath}: unknown fields - ${extra.join(', ')}`);
-  process.exit(1);
-}
-
-for (const field of stringFields) {
-  if (typeof entry[field] !== 'string' || entry[field].trim() === '') {
-    console.error(`${filePath}: ${field} must be a non-empty string`);
-    process.exit(1);
-  }
-}
-
-if (typeof entry.description !== 'string') {
-  console.error(`${filePath}: description must be a string`);
+try {
+  utils.validateEvent(entry);
+} catch (e) {
+  console.error(`${filePath}: ${e.message}`);
   process.exit(1);
 }
 
