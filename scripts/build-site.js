@@ -77,9 +77,9 @@ console.log(`Copied ${imagesCopied} image(s) to docs/images/`);
 const categories = [
   { id: 'photos-videos', label: 'Photos & Videos' },
   { id: 'stories', label: 'Stories' },
-  { id: 'art-posters', label: 'Art & Posters' },
-  { id: 'memes', label: 'Memes' },
-  { id: 'news-articles', label: 'News Articles' }
+  { id: 'art-posters-memes', label: 'Arts - Posters & Memes' },
+  { id: 'news-articles', label: 'News Article' },
+  { id: 'social-links', label: 'Social Media Links' }
 ];
 
 // Generate Homepage

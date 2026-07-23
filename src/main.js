@@ -294,7 +294,7 @@
               html += '<a href="' + escAttr(link) + '" target="_blank" rel="noopener noreferrer" class="entry-source-link">View original source &rarr;</a>';
             }
 
-            if (ev.ig_handle || ev.x_handle) {
+            if (ev.ig_handle || ev.x_handle || ev.socials) {
               html += '<div class="social-handles">';
               if (ev.ig_handle) {
                 var cleanIg = ev.ig_handle.startsWith('@') ? ev.ig_handle.substring(1) : ev.ig_handle;
@@ -303,6 +303,9 @@
               if (ev.x_handle) {
                 var cleanX = ev.x_handle.startsWith('@') ? ev.x_handle.substring(1) : ev.x_handle;
                 html += '<a href="https://x.com/' + escAttr(cleanX) + '" target="_blank" rel="noopener noreferrer" class="social-handle x-handle">X: ' + escHtml(ev.x_handle) + '</a>';
+              }
+              if (ev.socials) {
+                html += '<span class="social-handle">Socials: ' + escHtml(ev.socials) + '</span>';
               }
               html += '</div>';
             }

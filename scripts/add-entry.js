@@ -16,18 +16,17 @@ async function run() {
   const title = await ask('Title: ');
   const location = await ask('Location (e.g. Jantar Mantar, New Delhi): ');
   
-  console.log("\nCategories: photos-videos | stories | art-posters | memes | news-articles");
+  console.log("\nCategories: photos-videos | stories | art-posters-memes | news-articles | social-links");
   const category = await ask('Category: ');
-  const description = await ask('Description: ');
+  const description = await ask('Description/Stories: ');
   const tagsStr = await ask('Tags (comma separated, e.g. march, police): ');
-  const graphic = await ask('Graphic content? (y/n): ');
+  const graphic = await ask('Does this show injury or violence? (y/n): ');
   
   console.log("\n-- Media & Links --");
-  const imagesStr = await ask('Image filenames (comma separated, must already be in data/images/): ');
-  const ig_handle = await ask('IG Handle (optional): ');
-  const x_handle = await ask('X Handle (optional): ');
-  const source_link = await ask('Source URL (optional, for articles): ');
-  const contributor = await ask('Contributor Name: ');
+  const imagesStr = await ask('Image/Video filenames (comma separated, must be in data/images/): ');
+  const source_link = await ask('News Article or Social Media Link: ');
+  const contributor = await ask('Name or initials (leave blank for anonymous): ');
+  const socials = await ask('Socials (Instagram, X): ');
 
   // Generate URL-friendly ID
   const id = date + '-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -47,8 +46,7 @@ async function run() {
     verified: true
   };
 
-  if (ig_handle) event.ig_handle = ig_handle;
-  if (x_handle) event.x_handle = x_handle;
+  if (socials) event.socials = socials;
   if (source_link) event.source_link = source_link;
 
   const filepath = path.join(__dirname, '..', 'data', 'events', `${id}.json`);

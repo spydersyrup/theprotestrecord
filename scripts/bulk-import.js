@@ -51,7 +51,7 @@ async function run() {
     const date = await ask(`Date (YYYY-MM-DD) [${defaultDate}]: `);
     const finalDate = date || defaultDate;
 
-    console.log("Categories: photos-videos | stories | art-posters | memes | news-articles");
+    console.log("Categories: photos-videos | stories | art-posters-memes | news-articles | social-links");
     const category = await ask('Category [photos-videos]: ');
     const finalCat = category || 'photos-videos';
 
