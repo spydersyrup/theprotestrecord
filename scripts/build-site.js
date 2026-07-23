@@ -133,7 +133,30 @@ sitemapXML += `</urlset>`;
 fs.writeFileSync(path.join(DOCS_DIR, 'sitemap.xml'), sitemapXML, 'utf-8');
 fs.writeFileSync(path.join(DOCS_DIR, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://theprotestrecord.pages.dev/sitemap.xml\n', 'utf-8');
 
-console.log(`Generated homepage, 4 category pages, submit page, SEO files, and shared assets`);
+// Generate Archive Data Export
+fs.writeFileSync(path.join(DOCS_DIR, 'archive.json'), JSON.stringify(events, null, 2), 'utf-8');
+
+// Generate CSV Data Export
+const csvHeaders = ['ID', 'Date', 'Location', 'Category', 'Title', 'Description', 'Tags', 'Images', 'Graphic Content', 'Contributor', 'Verified', 'Source URL', 'Socials'];
+const csvRows = [csvHeaders.join(',')];
+for (const ev of events) {
+  const row = [
+    ev.id, ev.date, ev.location, ev.category, ev.title, ev.description,
+    (ev.tags || []).join(';'), (ev.images || []).join(';'),
+    ev.graphic_content ? 'TRUE' : 'FALSE', ev.contributor, ev.verified ? 'TRUE' : 'FALSE',
+    ev.source_link || ev.source_url || '', ev.socials || ''
+  ].map(val => {
+    const str = String(val || '');
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  });
+  csvRows.push(row.join(','));
+}
+fs.writeFileSync(path.join(DOCS_DIR, 'archive.csv'), csvRows.join('\n'), 'utf-8');
+
+console.log(`Generated homepage, 4 category pages, submit page, SEO files, archive data, and shared assets`);
 
 // ---------------------------------------------------------------------------
 // HTML Template
@@ -249,6 +272,9 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
           <li><a href="${depth}${c.id}/" class="nav-link ${categoryId === c.id ? 'active' : ''}">${c.label}</a></li>
           `).join('')}
           <li><a href="${depth}submit/" class="nav-link ${pageType === 'submit' ? 'active' : ''}">Submit</a></li>
+          <li style="margin-top: 1rem;"><span class="nav-link" style="opacity: 0.5; font-size: 0.8em; text-transform: uppercase;">Download Data</span></li>
+          <li><a href="${depth}archive.json" download="the_protest_record.json" class="nav-link" style="font-size: 0.95em;"><i data-lucide="download"></i> JSON Format</a></li>
+          <li><a href="${depth}archive.csv" download="the_protest_record.csv" class="nav-link" style="font-size: 0.95em;"><i data-lucide="table"></i> CSV / Excel</a></li>
           <li style="margin-top: 1rem;"><a href="https://github.com/spydersyrup/theprotestrecord" target="_blank" rel="noopener noreferrer" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg> View on GitHub</a></li>
         </ul>
       </nav>
