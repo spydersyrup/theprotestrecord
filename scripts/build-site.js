@@ -38,7 +38,7 @@ const events = eventFiles.map(file => {
     console.error(`Failed to parse ${file}: ${e.message}`);
     process.exit(1);
   }
-}).filter(ev => ev.description && ev.description.trim() !== '');
+});
 
 // Sort newest-first
 events.sort((a, b) => b.date.localeCompare(a.date));
