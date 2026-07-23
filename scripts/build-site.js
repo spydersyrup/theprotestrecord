@@ -38,7 +38,7 @@ const events = eventFiles.map(file => {
     console.error(`Failed to parse ${file}: ${e.message}`);
     process.exit(1);
   }
-});
+}).filter(ev => ev.description && ev.description.trim() !== '');
 
 // Sort newest-first
 events.sort((a, b) => b.date.localeCompare(a.date));
@@ -145,12 +145,84 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
   
   // HTML escaping for noscript fallback
   const esc = str => (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  let fallbackHTML = '<noscript><div style="opacity: 0; position: absolute; z-index: -1;">';
   const filteredEvents = pageType === 'category' ? events.filter(e => e.category === categoryId) : events;
-  for (const ev of filteredEvents) {
-    fallbackHTML += `<article><h2>${esc(ev.title)}</h2><p>${esc(ev.description)}</p><p>Location: ${esc(ev.location)}</p><time>${ev.date}</time></article>`;
+  
+  function renderStaticTimeline() {
+    let catsToRender = categories;
+    if (pageType === 'category') catsToRender = [categories.find(c => c.id === categoryId)];
+    
+    let html = '';
+    for (const cat of catsToRender) {
+      const catEvents = filteredEvents.filter(e => e.category === cat.id);
+      if (catEvents.length === 0 && pageType === 'home') continue;
+      
+      const visibleEvents = pageType === 'home' ? catEvents.slice(0, 3) : catEvents;
+      
+      html += `<section class="category-section">`;
+      html += `<span class="category-eyebrow">SECTION</span>`;
+      html += `<h2 class="category-header">${cat.label} <span class="category-count">${catEvents.length} ${catEvents.length === 1 ? 'entry' : 'entries'}</span></h2>`;
+      
+      if (visibleEvents.length === 0) {
+        html += `<p class="category-empty" style="color:var(--text-muted);margin-bottom:2rem;">No items found yet.</p>`;
+      } else {
+        for (const ev of visibleEvents) {
+          const dateStr = new Date(ev.date + 'T00:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+          html += `<article class="entry" id="event-${ev.id}" data-id="${ev.id}">`;
+          html += `<time class="entry-date">${esc(dateStr)}</time>`;
+          html += `<div class="entry-location">${esc(ev.location)}</div>`;
+          html += `<div class="entry-content">`;
+          
+          if (pageType === 'home' && ev.images && ev.images.length) {
+            html += `<div style="display:flex; align-items:flex-start; gap: 1.5rem;">`;
+            const firstImg = ev.images[0];
+            const src = `${depth}images/${firstImg}`;
+            const isVideo = src.match(/\\.(mp4|webm|mov)$/i);
+            html += `<div class="home-thumbnail" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.1);">`;
+            if (isVideo) {
+              html += `<video src="${esc(src)}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>`;
+            } else {
+              html += `<img src="${esc(src)}" style="width:100%;height:100%;object-fit:cover;" alt="Thumbnail" loading="lazy">`;
+            }
+            html += `</div>`;
+            html += `<h3 class="entry-title" style="margin-top:0;">${esc(ev.title)}</h3>`;
+            html += `</div>`;
+          } else {
+            html += `<h3 class="entry-title">${esc(ev.title)}</h3>`;
+          }
+          if (pageType !== 'home') {
+            html += `<p class="entry-body">${esc(ev.description)}</p>`;
+            if (ev.source_link) {
+              html += `<a href="${esc(ev.source_link)}" target="_blank" rel="noopener noreferrer" class="entry-source-link">View original source &rarr;</a>`;
+            }
+            if (ev.socials) {
+              html += `<div class="social-handles"><span class="social-handle">Socials: ${esc(ev.socials)}</span></div>`;
+            }
+            if (ev.images && ev.images.length) {
+              html += `<div class="entry-gallery${ev.images.length === 1 ? ' gallery-single' : ' gallery-multi'}">`;
+              ev.images.forEach((img, idx) => {
+                const src = `${depth}images/${img}`;
+                html += `<div class="gallery-thumb" data-event-id="${ev.id}" data-img-index="${idx}">`;
+                if (img.match(/\\.(mp4|webm|mov)$/i)) {
+                  html += `<video src="${src}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>`;
+                } else {
+                  html += `<img src="${src}" alt="Photo from ${esc(ev.title)}" loading="lazy">`;
+                }
+                html += `</div>`;
+              });
+              html += `</div>`;
+            }
+            if (ev.tags && ev.tags.length) {
+              html += `<div class="entry-tags">` + ev.tags.map(t => `<button class="tag-btn" data-tag="${esc(t)}">#${esc(t)}</button>`).join(' ') + `</div>`;
+            }
+            html += `<div class="entry-meta"><span>Contributed by ${esc(ev.contributor)}</span></div>`;
+          }
+          html += `</div></article>`;
+        }
+      }
+      html += `</section>`;
+    }
+    return html;
   }
-  fallbackHTML += '</div></noscript>';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -208,6 +280,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
           <li><a href="${depth}${c.id}/" class="nav-link ${categoryId === c.id ? 'active' : ''}">${c.label}</a></li>
           `).join('')}
           <li><a href="${depth}submit/" class="nav-link ${pageType === 'submit' ? 'active' : ''}">Submit</a></li>
+          <li style="margin-top: 1rem;"><a href="https://github.com/spydersyrup/theprotestrecord" target="_blank" rel="noopener noreferrer" class="nav-link"><i data-lucide="github"></i> View on GitHub</a></li>
         </ul>
       </nav>
 
@@ -276,7 +349,7 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
       
       ${pageType !== 'submit' ? `
       <div class="archive" id="timeline-container">
-        <!-- Rendered by JS -->
+        ${renderStaticTimeline()}
       </div>
       ` : ''}
     </main>
@@ -286,17 +359,14 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
     <button class="lightbox-close" id="lightbox-close" aria-label="Close"><i data-lucide="x"></i></button>
     <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous image"><i data-lucide="chevron-left"></i></button>
     <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next image"><i data-lucide="chevron-right"></i></button>
-    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+    <div class="lightbox-media-container" style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="">
+      <video class="lightbox-video hidden" id="lightbox-video" src="" controls playsinline style="max-height: 90vh; max-width: 90vw;"></video>
+    </div>
     <div class="lightbox-counter" id="lightbox-counter"></div>
   </div>
 
-  ${fallbackHTML}
-  <noscript>
-    <div style="padding:3rem;text-align:center;font-family:Inter,sans-serif;">
-      <h2>JavaScript Required</h2>
-      <p>This archive requires JavaScript to dynamically render galleries. Please enable JavaScript and reload.</p>
-    </div>
-  </noscript>
+  </div>
 
   <script>
     window.__EVENTS__ = ${eventsJSON};

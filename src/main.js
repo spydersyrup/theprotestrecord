@@ -284,8 +284,24 @@
           }
 
           html += '<div class="entry-content' + (isHidden ? ' hidden' : '') + '">';
-          html += '<h3 class="entry-title">' + escHtml(ev.title) + '</h3>';
           
+          if (pageType === 'home' && ev.images && ev.images.length) {
+            html += '<div style="display:flex; align-items:flex-start; gap: 1.5rem;">';
+            var firstImg = ev.images[0];
+            var src = depth + 'images/' + firstImg;
+            var isVideo = src.match(/\\.(mp4|webm|mov)$/i);
+            html += '<div class="home-thumbnail" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.1);">';
+            if (isVideo) {
+               html += '<video src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>';
+            } else {
+               html += '<img src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;" alt="Thumbnail" loading="lazy">';
+            }
+            html += '</div>';
+            html += '<h3 class="entry-title" style="margin-top:0;">' + escHtml(ev.title) + '</h3>';
+            html += '</div>';
+          } else {
+            html += '<h3 class="entry-title">' + escHtml(ev.title) + '</h3>';
+          }
           if (pageType !== 'home') {
             html += '<p class="entry-body">' + escHtml(ev.description) + '</p>';
 
@@ -315,8 +331,13 @@
               html += '<div class="entry-gallery' + countClass + '">';
               ev.images.forEach(function (img, imgIdx) {
                 var src = depth + 'images/' + img;
+                var isVideo = src.match(/\\.(mp4|webm|mov)$/i);
                 html += '<div class="gallery-thumb" data-event-id="' + escAttr(ev.id) + '" data-img-index="' + imgIdx + '">';
-                html += '<img src="' + escAttr(src) + '" alt="Photo from ' + escAttr(ev.title) + '" loading="lazy">';
+                if (isVideo) {
+                  html += '<video src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" autoplay muted loop playsinline></video>';
+                } else {
+                  html += '<img src="' + escAttr(src) + '" alt="Photo from ' + escAttr(ev.title) + '" loading="lazy">';
+                }
                 html += '</div>';
               });
               html += '</div>';
@@ -532,6 +553,7 @@
   // Lightbox
   var lightbox = document.getElementById('lightbox');
   var lbImg = document.getElementById('lightbox-img');
+  var lbVideo = document.getElementById('lightbox-video');
   var lbCounter = document.getElementById('lightbox-counter');
   
   var currentLightboxEv = null;
@@ -564,10 +586,26 @@
     if (idx >= imgs.length) idx = 0;
     
     currentLightboxIdx = idx;
-    if (lbImg) {
-      lbImg.src = depth + 'images/' + imgs[idx];
-      lbImg.alt = currentLightboxEv.title;
+    var src = depth + 'images/' + imgs[idx];
+    var isVideo = src.match(/\\.(mp4|webm|mov)$/i);
+    
+    if (lbImg && lbVideo) {
+      if (isVideo) {
+        lbImg.classList.add('hidden');
+        lbImg.src = '';
+        lbVideo.classList.remove('hidden');
+        lbVideo.src = src;
+        lbVideo.play().catch(function(e){});
+      } else {
+        lbVideo.classList.add('hidden');
+        lbVideo.pause();
+        lbVideo.src = '';
+        lbImg.classList.remove('hidden');
+        lbImg.src = src;
+        lbImg.alt = currentLightboxEv.title;
+      }
     }
+    
     if (lbCounter) {
       lbCounter.textContent = (idx + 1) + ' / ' + imgs.length;
     }
@@ -597,6 +635,13 @@
     if (lightbox) {
       lightbox.classList.add('hidden');
       document.body.style.overflow = '';
+      if (lbVideo) {
+        lbVideo.pause();
+        lbVideo.src = '';
+      }
+      if (lbImg) {
+        lbImg.src = '';
+      }
     }
   }
 
