@@ -109,14 +109,14 @@ fs.copyFileSync(path.join(__dirname, '../src/main.js'), path.join(DOCS_DIR, 'mai
 
 // Generate Sitemap and Robots.txt
 let sitemapXML = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/</loc></url>\n`;
-sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/submit/</loc></url>\n`;
+sitemapXML += `  <url><loc>https://theprotestrecord.pages.dev/</loc></url>\n`;
+sitemapXML += `  <url><loc>https://theprotestrecord.pages.dev/submit/</loc></url>\n`;
 for (const cat of categories) {
-  sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/${cat.id}/</loc></url>\n`;
+  sitemapXML += `  <url><loc>https://theprotestrecord.pages.dev/${cat.id}/</loc></url>\n`;
 }
 sitemapXML += `</urlset>`;
 fs.writeFileSync(path.join(DOCS_DIR, 'sitemap.xml'), sitemapXML, 'utf-8');
-fs.writeFileSync(path.join(DOCS_DIR, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://the-protest-record.pages.dev/sitemap.xml\n', 'utf-8');
+fs.writeFileSync(path.join(DOCS_DIR, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://theprotestrecord.pages.dev/sitemap.xml\n', 'utf-8');
 
 console.log(`Generated homepage, 4 category pages, submit page, SEO files, and shared assets`);
 
@@ -130,17 +130,17 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
 
   let pageTitle = "The Protest Record";
   let pageDesc = "Community archive documenting India's youth-led protest movement. A chronological record of events, verified by contributors.";
-  let pageUrl = "https://the-protest-record.pages.dev/";
+  let pageUrl = "https://theprotestrecord.pages.dev/";
   
   if (pageType === 'category') {
     const cat = categories.find(c => c.id === categoryId);
     pageTitle = `${cat.label} | The Protest Record`;
     pageDesc = `View ${cat.label} documenting the 2026 Indian youth-led protests.`;
-    pageUrl = `https://the-protest-record.pages.dev/${cat.id}/`;
+    pageUrl = `https://theprotestrecord.pages.dev/${cat.id}/`;
   } else if (pageType === 'submit') {
     pageTitle = "Submit Entry | The Protest Record";
     pageDesc = "Contribute your photos, videos, and stories to The Protest Record archive.";
-    pageUrl = "https://the-protest-record.pages.dev/submit/";
+    pageUrl = "https://theprotestrecord.pages.dev/submit/";
   }
   
   // HTML escaping for noscript fallback
