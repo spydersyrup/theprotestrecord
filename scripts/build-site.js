@@ -18,16 +18,7 @@ const ROOT = path.resolve(__dirname, '..');
 
 const Template = require('../src/template.js');
 
-function renderSocialEmbed(url) {
-  if (!url) return '';
-  if (url.match(/instagram\.com\/(?:p|reel)\//)) {
-    return `<div class="social-embed-wrapper"><blockquote class="instagram-media" data-instgrm-permalink="${url}" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin: 1px;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);"><a href="${url}" style="background:#FFFFFF;line-height:0;padding:0 0;text-align:center;text-decoration:none;width:100%;font-family:Arial,sans-serif;font-size:14px;font-style:normal;font-weight:550;line-height:18px;">View post on Instagram</a></blockquote></div>`;
-  }
-  if (url.match(/(?:x\.com|twitter\.com)\/.*\/status\//)) {
-    return `<div class="social-embed-wrapper"><blockquote class="twitter-tweet" data-dnt="true"><a href="${url}">View post on X</a></blockquote></div>`;
-  }
-  return '';
-}
+// renderSocialEmbed was moved to template.js
 
 const EVENTS_DIR = path.join(ROOT, 'data', 'events');
 const IMAGES_DIR = path.join(ROOT, 'data', 'images');
@@ -204,7 +195,8 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
       } else {
         if (pageType === 'home') html += `<div class="entries-grid">`;
         for (const ev of visibleEvents) {
-          html += Template.renderEventCard(ev, pageType, depth);
+          const isHidden = ev.graphic_content; // SSR defaults to hiding graphic content
+          html += Template.renderEventCard(ev, pageType, depth, false, isHidden);
         }
         if (pageType === 'home') html += `</div>`;
       }
