@@ -107,7 +107,18 @@ fs.writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '', 'utf-8');
 fs.copyFileSync(path.join(__dirname, '../src/styles.css'), path.join(DOCS_DIR, 'styles.css'));
 fs.copyFileSync(path.join(__dirname, '../src/main.js'), path.join(DOCS_DIR, 'main.js'));
 
-console.log(`Generated homepage, 4 category pages, submit page, and shared assets`);
+// Generate Sitemap and Robots.txt
+let sitemapXML = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/</loc></url>\n`;
+sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/submit/</loc></url>\n`;
+for (const cat of categories) {
+  sitemapXML += `  <url><loc>https://the-protest-record.pages.dev/${cat.id}/</loc></url>\n`;
+}
+sitemapXML += `</urlset>`;
+fs.writeFileSync(path.join(DOCS_DIR, 'sitemap.xml'), sitemapXML, 'utf-8');
+fs.writeFileSync(path.join(DOCS_DIR, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://the-protest-record.pages.dev/sitemap.xml\n', 'utf-8');
+
+console.log(`Generated homepage, 4 category pages, submit page, SEO files, and shared assets`);
 
 // ---------------------------------------------------------------------------
 // HTML Template
@@ -117,16 +128,45 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
   const eventsJSON = JSON.stringify(events);
   const categoriesJSON = JSON.stringify(categories);
 
+  let pageTitle = "The Protest Record";
+  let pageDesc = "Community archive documenting India's youth-led protest movement. A chronological record of events, verified by contributors.";
+  let pageUrl = "https://the-protest-record.pages.dev/";
+  
+  if (pageType === 'category') {
+    const cat = categories.find(c => c.id === categoryId);
+    pageTitle = `${cat.label} | The Protest Record`;
+    pageDesc = `View ${cat.label} documenting the 2026 Indian youth-led protests.`;
+    pageUrl = `https://the-protest-record.pages.dev/${cat.id}/`;
+  } else if (pageType === 'submit') {
+    pageTitle = "Submit Entry | The Protest Record";
+    pageDesc = "Contribute your photos, videos, and stories to The Protest Record archive.";
+    pageUrl = "https://the-protest-record.pages.dev/submit/";
+  }
+  
+  // HTML escaping for noscript fallback
+  const esc = str => (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  let fallbackHTML = '<noscript><div style="opacity: 0; position: absolute; z-index: -1;">';
+  const filteredEvents = pageType === 'category' ? events.filter(e => e.category === categoryId) : events;
+  for (const ev of filteredEvents) {
+    fallbackHTML += `<article><h2>${esc(ev.title)}</h2><p>${esc(ev.description)}</p><p>Location: ${esc(ev.location)}</p><time>${ev.date}</time></article>`;
+  }
+  fallbackHTML += '</div></noscript>';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TWLD - The World's Largest Demockracy</title>
-  <meta name="description" content="Community archive documenting India's youth-led protest movement. A chronological record of events, verified by contributors.">
-  <meta property="og:title" content="TWLD - The World's Largest Demockracy">
-  <meta property="og:description" content="Community archive documenting India's youth-led protest movement.">
+  <title>${pageTitle}</title>
+  <meta name="description" content="${pageDesc}">
+  <link rel="canonical" href="${pageUrl}">
+  <meta property="og:title" content="${pageTitle}">
+  <meta property="og:description" content="${pageDesc}">
+  <meta property="og:url" content="${pageUrl}">
   <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${pageTitle}">
+  <meta name="twitter:description" content="${pageDesc}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -250,10 +290,11 @@ function buildHTML(events, pageType, categoryId, depth, categories) {
     <div class="lightbox-counter" id="lightbox-counter"></div>
   </div>
 
+  ${fallbackHTML}
   <noscript>
     <div style="padding:3rem;text-align:center;font-family:Inter,sans-serif;">
       <h2>JavaScript Required</h2>
-      <p>This archive requires JavaScript to render entries. Please enable JavaScript and reload.</p>
+      <p>This archive requires JavaScript to dynamically render galleries. Please enable JavaScript and reload.</p>
     </div>
   </noscript>
 
